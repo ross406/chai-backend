@@ -4,7 +4,7 @@ import fs from "fs";
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET, // Click 'View API Keys' above to copy your API secret
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const uploadOnCloudinary = async (localFilePath) => {
@@ -14,8 +14,14 @@ const uploadOnCloudinary = async (localFilePath) => {
     const uploadResult = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto", // Automatically detect the file type (image, video, etc.)
     });
-
-    console.log("File uploaded successfully:", uploadResult);
+    fs.unlinkSync(localFilePath, (err) => {
+      if (err) {
+        console.error("Error deleting local file:", err);
+      } else {
+        console.log("Local file deleted successfully");
+      }
+    });
+    // console.log("File uploaded successfully:", uploadResult);
     return uploadResult; // Return the secure URL of the uploaded file
   } catch (error) {
     fs.unlink(localFilePath, (err) => {
